@@ -16,6 +16,12 @@ def longueur(sigma, W) : # à tester plus
             res += [alpha]
     return len(res)
 
+def associate_root(sigma,W): # Pour sigma reflexion, renvoie la racine positive qui lui est associée
+    for alpha in range(len(W.positive_roots())):
+        if W.roots()[sigma.action_on_root_indices(alpha)] == - W.positive_roots()[alpha] :
+            return W.positive_roots()[alpha]
+    return -1
+
 # Tests 
 W = CoxeterGroup(['A',2])
 S = W.gens()
