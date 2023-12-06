@@ -16,10 +16,12 @@ def longueur(sigma, W) : # à tester plus
             res += [alpha]
     return len(res)
 
-def associate_root(sigma,W): # Pour sigma reflexion, renvoie la racine positive qui lui est associée
-    for alpha in range(len(W.positive_roots())):
-        if W.roots()[sigma.action_on_root_indices(alpha)] == - W.positive_roots()[alpha] :
-            return W.positive_roots()[alpha]
+def associate_root(sigma,W): # Pour sigma reflexion, renvoie l'indice de la racine positive qui lui est associée
+    n = len(W.positive_roots())
+    for alpha in range(n):
+        k = sigma.action_on_root_indices(alpha)
+        if W.roots()[k] == - W.positive_roots()[alpha] :
+            return k - n
     return -1
 
 # On écrit une fonction permettant la construction des
@@ -29,6 +31,34 @@ def constructPartialSigma(sigma, i, j, W):
     for s in sigma[i+1:j]:
         w = w * s
     return w
+
+# On adapte la fonction de réduction du mot aux groupes de Coxeter en général
+# ce qu'on justifie par le fait que tout groupe de Coxeter admet une représentation
+# fidèle comme groupe de réflexions réel
+
+def reduction(sigma,W) :
+    w = W.one()
+    b = False
+    sigma2 = sigma.copy()
+    for s in sigma :
+        w = w * s
+    l = n(w,W)
+    while len(sigma2) > l :
+        j = 1
+        while j < len(sigma2) and not(b):
+            alpha = associate_root(sigma2[j],W)
+            i = 0
+            while i < j and not(b):
+                w = constructPartialSigma(sigma2, i, j, W)
+                alphaI = w.action(alpha) # à adapter
+                if associate_root(sigma2[i],W) == alphaI:
+                    del(sigma2[j])
+                    del(sigma2[i])
+                    b = True
+                i += 1
+            j += 1
+        b = False
+    return sigma2
 
 # Tests 
 
@@ -56,3 +86,5 @@ print(" ")
 print(a*b*c)
 print(" ")
 print(constructPartialSigma(sigma, 1, 5, W))
+
+# faire des tests pour reduction
