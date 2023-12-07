@@ -42,7 +42,7 @@ def reduction(sigma,W) :
     sigma2 = sigma.copy()
     for s in sigma :
         w = w * s
-    l = n(w,W)
+    l = longueur(w,W)
     while len(sigma2) > l :
         j = 1
         while j < len(sigma2) and not(b):
@@ -50,7 +50,7 @@ def reduction(sigma,W) :
             i = 0
             while i < j and not(b):
                 w = constructPartialSigma(sigma2, i, j, W)
-                alphaI = w.action(alpha) # à adapter
+                alphaI = w.action_on_root_indices(alpha)
                 if associate_root(sigma2[i],W) == alphaI:
                     del(sigma2[j])
                     del(sigma2[i])
@@ -88,3 +88,4 @@ print(" ")
 print(constructPartialSigma(sigma, 1, 5, W))
 
 # faire des tests pour reduction
+print(reduction(sigma,W))
