@@ -81,8 +81,18 @@ def indices_to_gen(sigma,W):
         res += [S[i]]
     return res
 
-# Tests 
+#Fonction qui étant donnée une relation de tresse, trouve toutes les occurrences de cette relation dans le mot
+def indices_tresses(rel,sigma):
+    res = []
+    k = len(rel[0])
+    for i in range(len(sigma)):
+        if sigma[i:(i+k)] == rel[0] or sigma[i:(i+k)] == rel[1]:
+            res += [i]
+    return res
 
+
+# Tests 
+"""
 W = CoxeterGroup(['A',2])
 S = W.gens()
 w = S[0]*S[1]*S[0]*S[1]*S[0]
@@ -110,3 +120,4 @@ print(constructPartialSigma(sigma, 1, 5, W))
 
 # faire des tests pour reduction
 print(reduction(sigma,W))
+"""
