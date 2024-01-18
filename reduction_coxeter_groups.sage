@@ -1,3 +1,5 @@
+#!/usr/bin/env sage
+
 # author : Lucas POUILLART
 
 # On va commencer par redéfinir la fonction de réduction pour les groupes de Weyl, afin de l'appliquer
@@ -59,6 +61,25 @@ def reduction(sigma,W) :
             j += 1
         b = False
     return sigma2
+
+# Deux fonctions qui permettent de transformer un liste de générateurs en une liste de leurs indices et réciproquement
+
+def gen_to_indices(sigma,W):
+    S = W.gens()
+    res = []
+    for s in sigma :
+        i = 0
+        while s != S[i] and i < len(S) :
+            i += 1
+        res += [i]
+    return res
+
+def indices_to_gen(sigma,W):
+    S = W.gens()
+    res = []
+    for i in sigma:
+        res += [S[i]]
+    return res
 
 # Tests 
 
