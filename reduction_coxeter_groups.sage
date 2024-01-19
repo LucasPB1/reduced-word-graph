@@ -90,6 +90,14 @@ def indices_tresses(rel,sigma):
             res += [i]
     return res
 
+#Fonction qui étant donné une relation de tresse rel l'applique à l'indice i
+def appliquer_tresse(sigma,rel,i):
+    res = sigma.copy()
+    if res[i:i+len(rel[0])] == rel[0]:
+        res[i:i+len(rel[0])] = rel[1]
+    else :
+        res[i:i+len(rel[0])] = rel[0]
+    return res
 
 # Tests 
 """
