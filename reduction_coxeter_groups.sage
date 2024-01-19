@@ -71,14 +71,14 @@ def gen_to_indices(sigma,W):
         i = 0
         while s != S[i] and i < len(S) :
             i += 1
-        res += [i]
+        res += [i+1]
     return res
 
 def indices_to_gen(sigma,W):
     S = W.gens()
     res = []
     for i in sigma:
-        res += [S[i]]
+        res += [S[i-1]]
     return res
 
 #Fonction qui étant donnée une relation de tresse, trouve toutes les occurrences de cette relation dans le mot
