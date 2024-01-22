@@ -91,13 +91,33 @@ def indices_tresses(rel,sigma):
     return res
 
 #Fonction qui étant donné une relation de tresse rel l'applique à l'indice i
-def appliquer_tresse(sigma,rel,i):
+def appliquer_tresse(sigma,rel,i): #Pourrait servir pour tout type de relations
     res = sigma.copy()
     if res[i:i+len(rel[0])] == rel[0]:
         res[i:i+len(rel[0])] = rel[1]
     else :
-        res[i:i+len(rel[0])] = rel[0]
+        res[i:i+len(rel[1])] = rel[0]
     return res
+
+def Orbite_Tresse(sigma, W):
+    w = gen_to_indices(reduction(sigma,W),W)
+    Tmp = [w]
+    Traité = []
+    rels = W.braid_relations()
+    while Tmp != [] :
+        w = Tmp[0]
+        print(w)
+        for rel in rels :
+            #print(rel)
+            i = indices_tresses(rel,w)
+            for j in i :
+                #print(j)
+                l = appliquer_tresse(w,rel,j)
+                if l not in Tmp and l not in Traité:
+                    Tmp += [l]
+        Traité += [Tmp[0]]
+        del(Tmp[0])
+    return Traité
 
 # Tests 
 """
