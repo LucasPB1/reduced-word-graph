@@ -118,7 +118,7 @@ def Orbite_Tresse(sigma, W):
                 l = appliquer_tresse(w,rel,j)
                 if l not in Tmp and l not in Traité:
                     Tmp.append(l)
-        Traité.append(Tmp[0])
+        Traité.append(w)
         #del(Tmp[0])
     return Traité
 
