@@ -103,10 +103,13 @@ def Orbite_Tresse(sigma, W):
     w = gen_to_indices(reduction(sigma,W),W)
     Tmp = [w]
     Traité = []
+    count = 0
     rels = W.braid_relations()
     while Tmp != [] :
-        w = Tmp[0]
-        print(w)
+        w = Tmp.pop()
+        #print(w)
+        count += 1
+        print(count)
         for rel in rels :
             #print(rel)
             i = indices_tresses(rel,w)
@@ -114,9 +117,9 @@ def Orbite_Tresse(sigma, W):
                 #print(j)
                 l = appliquer_tresse(w,rel,j)
                 if l not in Tmp and l not in Traité:
-                    Tmp += [l]
-        Traité += [Tmp[0]]
-        del(Tmp[0])
+                    Tmp.append(l)
+        Traité.append(Tmp[0])
+        #del(Tmp[0])
     return Traité
 
 # Tests 
