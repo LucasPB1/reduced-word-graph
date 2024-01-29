@@ -2,6 +2,8 @@
 
 # author : Lucas POUILLART
 
+import time
+
 # On va commencer par redéfinir la fonction de réduction pour les groupes de Weyl, afin de l'appliquer
 # aux groupes de Coxeter en général :
 
@@ -93,11 +95,16 @@ def indices_tresses(rel,sigma):
 #Fonction qui étant donné une relation de tresse rel l'applique à l'indice i
 def appliquer_tresse(sigma,rel,i): #Pourrait servir pour tout type de relations
     res = sigma.copy()
-    if res[i:i+len(rel[0])] == rel[0]:
+    if res[i] == rel[0][0]:
         res[i:i+len(rel[0])] = rel[1]
     else :
         res[i:i+len(rel[1])] = rel[0]
     return res
+
+"""if res[i:i+len(rel[0])] == rel[0]:
+        res[i:i+len(rel[0])] = rel[1]
+    else :
+        res[i:i+len(rel[1])] = rel[0]"""
 
 def Orbite_Tresse(sigma, W):
     w = gen_to_indices(reduction(sigma,W),W)
@@ -107,9 +114,10 @@ def Orbite_Tresse(sigma, W):
     rels = W.braid_relations()
     while Tmp != [] :
         w = Tmp.pop()
+        #w = Tmp[0]
         #print(w)
-        count += 1
-        print(count)
+        #count += 1
+        #print(count)
         for rel in rels :
             #print(rel)
             i = indices_tresses(rel,w)
@@ -122,7 +130,48 @@ def Orbite_Tresse(sigma, W):
         #del(Tmp[0])
     return Traité
 
+def Orbite_Tresse2(sigma, W):
+    w = gen_to_indices(reduction(sigma,W),W)
+    Tmp = [w]
+    Traité = []
+    count = 0
+    rels = W.braid_relations()
+    b = 0
+    nb_mots = 1
+    while b < nb_mots :
+        w = Tmp.pop()
+        #w = Tmp[0]
+        #count += 1
+        #if count % 100 == 0:
+            #print(count)
+        for rel in rels :
+            i = indices_tresses(rel,w)
+            for j in i :
+                l = appliquer_tresse(w,rel,j)
+                if l not in Tmp and l not in Traité:
+                    Tmp.append(l)
+                    nb_mots += 1
+        Traité.append(w)
+        b += 1
+        #del(Tmp[0])
+    return Traité
+
 # Tests 
+
+def calcul_temps(w,W,s):
+    t1 = time.time()
+    Orbite_Tresse(w,W)
+    t2 = time.time()
+    s.reduced_words()
+    t3 = time.time()
+    print((t3 - t2))
+    print((t2 - t1))
+    if (t2 - t1) < (t3 - t2):
+        print("super")
+    else :
+        print("mince")
+
+
 """
 W = CoxeterGroup(['A',2])
 S = W.gens()
