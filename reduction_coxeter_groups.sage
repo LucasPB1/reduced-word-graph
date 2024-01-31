@@ -94,11 +94,10 @@ def indices_tresses(rel,sigma):
 
 #Fonction qui étant donné une relation de tresse rel l'applique à l'indice i
 def appliquer_tresse(sigma,rel,i): #Pourrait servir pour tout type de relations
-    res = sigma.copy()
-    if res[i] == rel[0][0]:
-        res[i:i+len(rel[0])] = rel[1]
+    if sigma[i] == rel[0][0]:
+        res = sigma[:i] + rel[1] + sigma[i+len(rel[0]):]
     else :
-        res[i:i+len(rel[1])] = rel[0]
+        res = sigma[:i] + rel[0] + sigma[i+len(rel[0]):] 
     return res
 
 """if res[i:i+len(rel[0])] == rel[0]:
@@ -108,13 +107,15 @@ def appliquer_tresse(sigma,rel,i): #Pourrait servir pour tout type de relations
 
 def Orbite_Tresse(sigma, W):
     w = gen_to_indices(reduction(sigma,W),W)
-    Tmp = [w]
-    Traité = []
+    Tmp = {tuple(w)}
+    Traité = set()
     count = 0
     rels = W.braid_relations()
-    while Tmp != [] :
+    for i in range(len(rels)):
+        rels[i][0] = tuple(rels[i][0])
+        rels[i][1] = tuple(rels[i][1])
+    while len(Tmp) != 0 :
         w = Tmp.pop()
-        #w = Tmp[0]
         #print(w)
         #count += 1
         #print(count)
@@ -124,36 +125,9 @@ def Orbite_Tresse(sigma, W):
             for j in i :
                 #print(j)
                 l = appliquer_tresse(w,rel,j)
-                if l not in Tmp and l not in Traité:
-                    Tmp.append(l)
-        Traité.append(w)
-        #del(Tmp[0])
-    return Traité
-
-def Orbite_Tresse2(sigma, W):
-    w = gen_to_indices(reduction(sigma,W),W)
-    Tmp = [w]
-    Traité = []
-    count = 0
-    rels = W.braid_relations()
-    b = 0
-    nb_mots = 1
-    while b < nb_mots :
-        w = Tmp.pop()
-        #w = Tmp[0]
-        #count += 1
-        #if count % 100 == 0:
-            #print(count)
-        for rel in rels :
-            i = indices_tresses(rel,w)
-            for j in i :
-                l = appliquer_tresse(w,rel,j)
-                if l not in Tmp and l not in Traité:
-                    Tmp.append(l)
-                    nb_mots += 1
-        Traité.append(w)
-        b += 1
-        #del(Tmp[0])
+                if not(l in Tmp) and not(l in Traité):
+                        Tmp.add(l)
+        Traité.add(w)
     return Traité
 
 # Tests 
@@ -200,4 +174,67 @@ print(constructPartialSigma(sigma, 1, 5, W))
 
 # faire des tests pour reduction
 print(reduction(sigma,W))
+
+def Braid_Orbit(word, rels):
+    r"""
+    Return the orbit of ``word`` by all replacements given by ``rels``.
+
+    INPUT:
+
+    - ``word`` -- list of integers
+
+    - ``rels`` -- list of pairs ``(A, B)``, where ``A`` and ``B`` are
+      lists of integers the same length
+
+    EXAMPLES::
+
+        sage: from sage.combinat.root_system.braid_orbit import BraidOrbit
+        sage: word = [1,2,1,3,2,1]
+        sage: rels = [[[2, 1, 2], [1, 2, 1]], [[3, 1], [1, 3]], [[3, 2, 3], [2, 3, 2]]]
+        sage: sorted(BraidOrbit(word, rels))
+        [(1, 2, 1, 3, 2, 1),
+         (1, 2, 3, 1, 2, 1),
+         (1, 2, 3, 2, 1, 2),
+         (1, 3, 2, 1, 3, 2),
+         (1, 3, 2, 3, 1, 2),
+         (2, 1, 2, 3, 2, 1),
+         (2, 1, 3, 2, 1, 3),
+         (2, 1, 3, 2, 3, 1),
+         (2, 3, 1, 2, 1, 3),
+         (2, 3, 1, 2, 3, 1),
+         (2, 3, 2, 1, 2, 3),
+         (3, 1, 2, 1, 3, 2),
+         (3, 1, 2, 3, 1, 2),
+         (3, 2, 1, 2, 3, 2),
+         (3, 2, 1, 3, 2, 3),
+         (3, 2, 3, 1, 2, 3)]
+        sage: len(_)
+        16
+    """
+
+    l = len(word)
+    words = {tuple(word)}
+    test_words = [tuple(word)]
+
+    rels = rels + [[b, a] for a, b in rels]
+    rels = [[tuple(a), tuple(b), len(a)] for a, b in rels]
+
+    loop_ind = 0
+    list_len = 1
+    while loop_ind < list_len:
+        sig_check()
+        test_word = test_words[loop_ind]
+        loop_ind += 1
+        for rel in rels:
+            left = rel[0]
+            right = rel[1]
+            rel_l = rel[2]
+            for i in range(l-rel_l+1):
+                if pattern_match(test_word, i, left, rel_l):
+                    new_word = test_word[:i] + right + test_word[i+rel_l:]
+                    if new_word not in words:
+                        words.add(new_word)
+                        test_words.append(new_word)
+                        list_len += 1
+    return words
 """
