@@ -117,8 +117,8 @@ def Orbite_Tresse(sigma, W):
     while len(Tmp) != 0 :
         w = Tmp.pop()
         #print(w)
-        #count += 1
-        #print(count)
+        count += 1
+        print(count)
         for rel in rels :
             #print(rel)
             i = indices_tresses(rel,w)
@@ -129,6 +129,34 @@ def Orbite_Tresse(sigma, W):
                         Tmp.add(l)
         Traité.add(w)
     return Traité
+
+def graphe_mots_reduits(sigma, W):
+    w = gen_to_indices(reduction(sigma,W),W)
+    G = graphs.EmptyGraph()
+    Tmp = {tuple(w)}
+    d = dict()
+    Traité = set()
+    count = 0
+    rels = W.braid_relations()
+    for i in range(len(rels)):
+        rels[i][0] = tuple(rels[i][0])
+        rels[i][1] = tuple(rels[i][1])
+    while len(Tmp) != 0 :
+        w = Tmp.pop()
+        #print(w)
+        count += 1
+        print(count)
+        for rel in rels :
+            #print(rel)
+            i = indices_tresses(rel,w)
+            for j in i :
+                #print(j)
+                l = appliquer_tresse(w,rel,j)
+                G.add_edge(w,l,rel)
+                if not(l in Tmp) and not(l in Traité):
+                        Tmp.add(l)
+        Traité.add(w)
+    return G
 
 # Tests 
 
@@ -176,7 +204,7 @@ print(constructPartialSigma(sigma, 1, 5, W))
 print(reduction(sigma,W))
 
 def Braid_Orbit(word, rels):
-    r"""
+    
     Return the orbit of ``word`` by all replacements given by ``rels``.
 
     INPUT:
@@ -210,7 +238,7 @@ def Braid_Orbit(word, rels):
          (3, 2, 3, 1, 2, 3)]
         sage: len(_)
         16
-    """
+    
 
     l = len(word)
     words = {tuple(word)}
