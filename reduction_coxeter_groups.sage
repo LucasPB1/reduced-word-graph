@@ -117,8 +117,8 @@ def Orbite_Tresse(sigma, W):
     while len(Tmp) != 0 :
         w = Tmp.pop()
         #print(w)
-        #count += 1
-        #print(count)
+        count += 1
+        print(count)
         for rel in rels :
             #print(rel)
             i = indices_tresses(rel,w)
@@ -128,6 +128,25 @@ def Orbite_Tresse(sigma, W):
                 if not(l in Tmp) and not(l in Traité):
                         Tmp.add(l)
         Traité.add(w)
+    return Traité
+
+def Orbite_Tresse_l(sigma, W):
+    w = gen_to_indices(reduction(sigma,W),W)
+    Tmp = [w]
+    Traité = []
+    count = 0
+    rels = W.braid_relations()
+    while len(Tmp) != 0 :
+        w = Tmp.pop()
+        count += 1
+        print(count)
+        for rel in rels :
+            i = indices_tresses(rel,w)
+            for j in i :
+                l = appliquer_tresse(w,rel,j)
+                if not(l in Tmp) and not(l in Traité):
+                        Tmp.append(l)
+        Traité.append(w)
     return Traité
 
 def graphe_mots_reduits(sigma, W):
@@ -153,6 +172,25 @@ def graphe_mots_reduits(sigma, W):
                         Tmp.add(l)
         Traité.add(w)
     return G
+
+def evacuation_path(n,T): #détermine le chemin d'évacuation de i dans le tableau t
+    coord = [-1,-1]
+    for i in range(len(T)):
+        if T[i][-1] == n:
+            coord = [i,len(T[i])-1]
+    c = coord.copy()
+    res = [c]
+    while (c != [0,0]):
+        print(c)
+        if T[c[0]][c[1]-1] > T[c[0]-1][c[1]] :
+            c = [c[0]-1,c[1]]
+        else : # Rajouter conditions
+            c = [c[0],c[1]-1]
+        res.append(c)
+    return res
+
+
+
 
 def bijection_tableaux_mots(t) :
     """ Prend en argument un tableau de Young standard de forme n*(n-1)*...*1 et
