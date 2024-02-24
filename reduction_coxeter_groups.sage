@@ -173,24 +173,32 @@ def graphe_mots_reduits(sigma, W):
         Traité.add(w)
     return G
 
-def evacuation_path(n,T): #détermine le chemin d'évacuation de i dans le tableau t
+def evacuation_path(n,T): #détermine le chemin d'évacuation de n dans le tableau T
     coord = [-1,-1]
     for i in range(len(T)):
         if T[i][-1] == n:
             coord = [i,len(T[i])-1]
     c = coord.copy()
     res = [c]
-    while (c != [0,0]):
+    while c[0] != 0 and c[1] != 0:
         print(c)
         if T[c[0]][c[1]-1] > T[c[0]-1][c[1]] :
-            c = [c[0]-1,c[1]]
-        else : # Rajouter conditions
             c = [c[0],c[1]-1]
+        else :
+            c = [c[0]-1,c[1]]
         res.append(c)
+    if c[0] == 0 :
+        while T[c[0]][c[1]] != 0 and c[1] != 0:
+            print(c)
+            c = [c[0],c[1]-1]
+            res.append(c)
+    else :
+        while T[c[0]][c[1]] != 0 and c[0] != 0:
+            print(c)
+            c = [c[0]-1,c[1]]
+            res.append(c)
+    print(c)
     return res
-
-
-
 
 def bijection_tableaux_mots(t) :
     """ Prend en argument un tableau de Young standard de forme n*(n-1)*...*1 et
