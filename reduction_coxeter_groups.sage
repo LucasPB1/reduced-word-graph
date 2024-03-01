@@ -181,7 +181,7 @@ def evacuation_path(n,T): #détermine le chemin d'évacuation de n dans le table
     c = coord.copy()
     res = [c]
     while c[0] != 0 and c[1] != 0:
-        print(c)
+        #print(c)
         if T[c[0]][c[1]-1] > T[c[0]-1][c[1]] :
             c = [c[0],c[1]-1]
         else :
@@ -189,15 +189,15 @@ def evacuation_path(n,T): #détermine le chemin d'évacuation de n dans le table
         res.append(c)
     if c[0] == 0 :
         while T[c[0]][c[1]] != 0 and c[1] != 0:
-            print(c)
+            #print(c)
             c = [c[0],c[1]-1]
             res.append(c)
     else :
         while T[c[0]][c[1]] != 0 and c[0] != 0:
-            print(c)
+            #print(c)
             c = [c[0]-1,c[1]]
             res.append(c)
-    print(c)
+    #print(c)
     return res
 
 def max(t): # Détermine l'élément le plus grand du tableau
@@ -218,9 +218,9 @@ def bijection_tableaux_mots(t) :
     maxi = max(L)
     res = []
     while maxi != 0 :
-        print(maxi)
+        #print(maxi)
         path = evacuation_path(maxi,L)
-        print(L)
+        #print(L)
         L[path[0][0]][path[0][1]] = 0
         for i in range(len(path)-1):
             L[path[i][0]][path[i][1]], L[path[i-1][0]][path[i-1][1]] = L[path[i-1][0]][path[i-1][1]], L[path[i][0]][path[i][1]]
@@ -228,7 +228,6 @@ def bijection_tableaux_mots(t) :
         res.append(path[0][1]+1)
     res.reverse()
     return tuple(res)
-    
 
 # Tests 
 
@@ -275,3 +274,19 @@ print(constructPartialSigma(sigma, 1, 5, W))
 # faire des tests pour reduction
 print(reduction(sigma,W))
 """
+
+W = CoxeterGroup(['A',5])
+S = W.gens()
+w = [S[4],S[3],S[2],S[1],S[0],S[4],S[3],S[2],S[1],S[4],S[3],S[2],S[4],S[3],S[4]]
+L = Orbite_Tresse(w,W)
+ST = StandardTableaux([5,4,3,2,1]).list()
+test = set()
+count = 0
+for i in ST :
+    l = bijection_tableaux_mots(i)
+    if l in L :
+        count += 1
+        print(count)
+        test.add(l)
+if len(test) == len(L):
+    print("gagné")
