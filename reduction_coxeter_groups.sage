@@ -200,6 +200,14 @@ def evacuation_path(n,T): #détermine le chemin d'évacuation de n dans le table
     print(c)
     return res
 
+def max(t): # Détermine l'élément le plus grand du tableau
+    max = 0
+    for i in t:
+        for j in i :
+            if j > max :
+                max = j
+    return max
+
 def bijection_tableaux_mots(t) :
     """ Prend en argument un tableau de Young standard de forme n*(n-1)*...*1 et
     renvoie le mot équivalent au mot le plus long de An associé par la bijection de
@@ -207,7 +215,19 @@ def bijection_tableaux_mots(t) :
     L = list() # transformation du tableau en listes pour effectuer les modifs
     for i in t :
         L.append(list(i))
-    return L #Pour l'instant réflexion sur l'algorithme exact
+    maxi = max(L)
+    res = []
+    while maxi != 0 :
+        print(maxi)
+        path = evacuation_path(maxi,L)
+        print(L)
+        L[path[0][0]][path[0][1]] = 0
+        for i in range(len(path)-1):
+            L[path[i][0]][path[i][1]], L[path[i-1][0]][path[i-1][1]] = L[path[i-1][0]][path[i-1][1]], L[path[i][0]][path[i][1]]
+        maxi = max(L)
+        res.append(path[0][1]+1)
+    res.reverse()
+    return tuple(res)
     
 
 # Tests 
