@@ -106,6 +106,10 @@ def appliquer_tresse(sigma,rel,i): #Pourrait servir pour tout type de relations
         res[i:i+len(rel[1])] = rel[0]"""
 
 def Orbite_Tresse(sigma, W):
+    """
+    Version efficace de la fonction qui calcule l'ensemble des mots réduits équivalents à sigma dans W (voir
+    graphe_mots_reduits pour des détails de fonctionnement
+    """
     w = gen_to_indices(reduction(sigma,W),W)
     Tmp = {tuple(w)}
     Traité = set()
@@ -131,6 +135,10 @@ def Orbite_Tresse(sigma, W):
     return Traité
 
 def Orbite_Tresse_l(sigma, W):
+    """
+    Version peu efficace de la fonction qui calcule l'ensemble des mots réduits équivalents à sigma dans W
+    Utilise des listes qui sont trop lourdes partir d'un certain rang (environ 7,5h pour sigma permutation inverse dans A5)
+    """
     w = gen_to_indices(reduction(sigma,W),W)
     Tmp = [w]
     Traité = []
@@ -150,27 +158,33 @@ def Orbite_Tresse_l(sigma, W):
     return Traité
 
 def graphe_mots_reduits(sigma, W):
-    w = gen_to_indices(reduction(sigma,W),W)
+    """
+    Calcule le graphe des mots réduits équivalents au mot sigma (en considérant un mot comme une liste de
+    générateurs de W)
+    On utilise le type python set pour le stockage : ce sont des tables de hachage qui permettent d'effectuer de manière très
+    efficace l'ajout d'un élément et le test d'appartenance d'un élément à un ensemble, tant que l'on n'a pas besoin de l'ordre
+    """
+    w = gen_to_indices(reduction(sigma,W),W) # on cherche d'abord un mot réduit w équivalent à sigma
     G = graphs.EmptyGraph()
-    Tmp = {tuple(w)}
-    Traité = set()
+    Tmp = {tuple(w)} # set qui contient les mots que l'on doit encore traiter (ie checker les relations de tresse)
+    Traité = set() # set qui contient la liste des mots obtenus
     count = 0
-    rels = W.braid_relations()
-    for i in range(len(rels)):
+    rels = W.braid_relations() # on récupère les relations de tresse de W
+    for i in range(len(rels)): # et on les convertit en tuples pour faciliter l'opération
         rels[i][0] = tuple(rels[i][0])
         rels[i][1] = tuple(rels[i][1])
-    while len(Tmp) != 0 :
-        w = Tmp.pop()
+    while len(Tmp) != 0 : # quand il n'y a plus de mot à traiter (fonctionne par lemme de Matsumoto/propriété du mot)
+        w = Tmp.pop() # on prend un mot au hasard
         count += 1
-        print(count)
-        for rel in rels :
-            i = indices_tresses(rel,w)
-            for j in i :
+        print(count) # juste pour voir comment ça avance
+        for rel in rels : #pour chaque relation de tresse
+            i = indices_tresses(rel,w) # on calcule les emplacements de chaque occurence de la relation
+            for j in i : # puis on l'applique à chaque emplacement
                 l = appliquer_tresse(w,rel,j)
-                G.add_edge(w,l,rel)
-                if not(l in Tmp) and not(l in Traité):
-                        Tmp.add(l)
-        Traité.add(w)
+                G.add_edge(w,l,rel) # on ajoute l'arête correspondante au graphe dans tous les cas
+                if not(l in Tmp) and not(l in Traité): # on teste l'appartenance pour voir si on a déjà rencontré ce mot ou pas
+                        Tmp.add(l) # puis on l'ajoute aux mots à traiter si ce n'est pas le cas
+        Traité.add(w) # on a traité w
     return G
 
 def evacuation_path(n,T): #détermine le chemin d'évacuation de n dans le tableau T
@@ -215,18 +229,18 @@ def bijection_tableaux_mots(t) :
     L = list() # transformation du tableau en listes pour effectuer les modifs
     for i in t :
         L.append(list(i))
-    maxi = max(L)
+    maxi = max(L) # détermination de l'élément max du tableau
     res = []
-    while maxi != 0 :
+    while maxi != 0 : # on prend comme convention qu'une case vide contient 0, donc maxi == 0 <=> L est vide
         #print(maxi)
-        path = evacuation_path(maxi,L)
+        path = evacuation_path(maxi,L) # on détermine son chemin d'évacuation
         #print(L)
-        L[path[0][0]][path[0][1]] = 0
-        for i in range(len(path)-1):
+        L[path[0][0]][path[0][1]] = 0 # on vide la case contenant le max
+        for i in range(len(path)-1): # on échange chaque case pour que la case vide suive le chemin path
             L[path[i][0]][path[i][1]], L[path[i-1][0]][path[i-1][1]] = L[path[i-1][0]][path[i-1][1]], L[path[i][0]][path[i][1]]
-        maxi = max(L)
-        res.append(path[0][1]+1)
-    res.reverse()
+        maxi = max(L) # on calcule le nouveau max
+        res.append(path[0][1]+1) # on ajoute la permutation s_i à la liste
+    res.reverse() # pas très utile pour faire directement une bijection mais elle est définie comme ça
     return tuple(res)
 
 # Tests 
@@ -284,7 +298,7 @@ test = set()
 count = 0
 for i in ST :
     l = bijection_tableaux_mots(i)
-    if l in L :
+    if l in L and l not in test:
         count += 1
         print(count)
         test.add(l)
