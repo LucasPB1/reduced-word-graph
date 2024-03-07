@@ -243,6 +243,50 @@ def bijection_tableaux_mots(t) :
     res.reverse() # pas très utile pour faire directement une bijection mais elle est définie comme ça
     return tuple(res)
 
+def max_ligne(l):
+    max = l[0]
+    for i in l :
+        if i > max :
+            max = i
+    return max
+
+def coxeter_knuth(n,T,S,c):
+    if T == [] :
+        T.append([n])
+        S.append([c])
+    else :
+        i = 0
+        while n != 0 :
+            if i == len(T):
+                T.append([n])
+                S.append([c])
+                #print(T)
+                n = 0
+            elif n >= max_ligne(T[i]) :
+                T[i].append(n)
+                S[i].append(c)
+                #print(T)
+                n = 0
+            else :
+                if n in T[i] and n+1 in T[i] :
+                    n = n+1
+                    #print(n)
+                    i += 1
+                else :
+                    j = 0
+                    while T[i][j] <= n :
+                        j += 1
+                    n, T[i][j] = T[i][j], n
+                    #print(n)
+                    i += 1
+
+def bijection_mots_tableaux(l):
+    T = []
+    S = []
+    for i in range(len(l)):
+        coxeter_knuth(l[i],T,S,i+1)
+    return StandardTableau(S)
+
 # Tests 
 
 def calcul_temps(w,W,s):
@@ -288,7 +332,7 @@ print(constructPartialSigma(sigma, 1, 5, W))
 # faire des tests pour reduction
 print(reduction(sigma,W))
 """
-
+"""
 W = CoxeterGroup(['A',5])
 S = W.gens()
 w = [S[4],S[3],S[2],S[1],S[0],S[4],S[3],S[2],S[1],S[4],S[3],S[2],S[4],S[3],S[4]]
@@ -304,3 +348,25 @@ for i in ST :
         test.add(l)
 if len(test) == len(L):
     print("gagné")
+"""
+
+"""
+ST = StandardTableaux([5,4,3,2,1]).list()
+for i in range(len(ST)):
+    if ST[i] != bijection_mots_tableaux(bijection_tableaux_mots(ST[i])):
+        print("incohérence")
+    else :
+        print(i+1)
+"""
+"""
+W = CoxeterGroup(['A',5])
+S = W.gens()
+w = [S[4],S[3],S[2],S[1],S[0],S[4],S[3],S[2],S[1],S[4],S[3],S[2],S[4],S[3],S[4]]
+L = Orbite_Tresse(w,W)
+for i in range(len(L)):
+    l = L.pop()
+    if l != bijection_tableaux_mots(bijection_mots_tableaux(l)):
+        print("incohérence")
+    else :
+        print(i+1)
+"""
