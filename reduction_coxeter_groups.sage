@@ -64,6 +64,28 @@ def reduction(sigma,W) :
         b = False
     return sigma2
 
+# Et on fait aussi une fonction deletion_condition_theorem pour le fun
+
+def deletionConditionTheorem(sigma,W):
+    w = W.one()
+    for s in sigma :
+        w = w * s
+    l = longueur(w,W)
+    if l == len(sigma):
+        return gen_to_indices(sigma,W)
+    else :
+        sigma2 = sigma.copy()
+        for j in range(1,len(sigma2),1):
+            alpha = associate_root(sigma2[j],W)
+            for i in range(j):
+                w = constructPartialSigma(sigma2, i, j, W)
+                alphaI = w.action_on_root_indices(alpha)
+                if associate_root(sigma2[i],W) == alphaI:
+                    del(sigma2[j])
+                    del(sigma2[i])
+                    return gen_to_indices(sigma2,W)
+        return -1
+
 # Deux fonctions qui permettent de transformer un liste de générateurs en une liste de leurs indices et réciproquement
 
 def gen_to_indices(sigma,W):
@@ -358,6 +380,7 @@ for i in range(len(ST)):
     else :
         print(i+1)
 """
+
 """
 W = CoxeterGroup(['A',5])
 S = W.gens()
