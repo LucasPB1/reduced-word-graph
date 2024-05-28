@@ -9,7 +9,22 @@ import time
 
 # On utilise le fait que dans sage, la fonction roots() renvoie une liste contenant d'abord les racines
 # positives puis les négatives
-def longueur(sigma, W) : # à tester plus
+def longueur(sigma, W) :
+    """
+    Renvoie la longueur de l'élément sigma dans le système de Coxeter W
+
+    La longueur de l'élément se calcule simplement en voyant combien de
+    racines positives sont envoyées sur des racines négatives par l'action de sigma.
+    (Voir le lemme 2.8)
+
+    EXEMPLE ::
+    
+        sage: W = CoxeterGroup(['A',3])
+        sage: S = W.gens()
+        sage: w = S[2]*S[1]*S[2]*S[2]*S[0]*S[2]*S[1]*S[2]
+        sage: longueur(w,W)
+        6
+    """
     pi = W.positive_roots()
     minus_pi = W.roots()[len(pi):]
     res = [] #liste qui contiendra l'intersection de pi et de sigma ^-1 (-pi)
@@ -20,7 +35,24 @@ def longueur(sigma, W) : # à tester plus
             res += [alpha]
     return len(res)
 
-def associate_root(sigma,W): # Pour sigma reflexion, renvoie l'indice de la racine positive qui lui est associée
+def associate_root(sigma,W):
+    """
+    Pour une réflexion sigma appartenant à W, renvoie l'indice de la racine de W
+    associée à la réflexion sigma
+
+    Fonctionne pour des groupes de réflexions ou des groupes de Coxeter
+    par leur représentation géométrique
+
+    EXEMPLE ::
+    
+        sage: W = CoxeterGroup(['A',3])
+        sage: S = W.gens()
+        sage: w = S[2]
+        sage: associate_root(w,W)
+        5
+        sage: W.roots()[5]
+        (0, 0, 1)
+    """
     n = len(W.positive_roots())
     for alpha in range(n):
         k = sigma.action_on_root_indices(alpha)
@@ -41,6 +73,27 @@ def constructPartialSigma(sigma, i, j, W):
 # fidèle comme groupe de réflexions réel
 
 def reduction(sigma,W) :
+    """
+    Pour une liste de réflexions simples sigma représentant un mot sur S, retourne
+    un mot réduit équivalent par l'application successive du théorème de condition
+    de délétion (voir théorème 2.7)
+
+    Fonctionne pour les groupes de Coxeter finis (le critère de longueur théoriquement 
+    vrai dans tous les groupes de Coxeter ne peut pas s'appliquer informatiquement 
+    dans les groupes infinis)
+
+    EXEMPLE ::
+    
+        sage: W = CoxeterGroup(['A',3])
+        sage: S = W.gens()
+        sage: w = [S[2],S[0],S[0],S[1],S[0],S[1],S[1],S[2],S[1],S[2]]
+        sage: reduction(w,W)
+        [
+        [ 1  0  0]  [ 1  0  0]  [-1  1  0]  [ 1  0  0]  [ 1  0  0]  [ 1  0  0]
+        [ 0  1  0]  [ 1 -1  1]  [ 0  1  0]  [ 0  1  0]  [ 1 -1  1]  [ 0  1  0]
+        [ 0  1 -1], [ 0  0  1], [ 0  0  1], [ 0  1 -1], [ 0  0  1], [ 0  1 -1]
+        ]
+    """
     w = W.one()
     b = False
     sigma2 = sigma.copy()
@@ -67,6 +120,23 @@ def reduction(sigma,W) :
 # Et on fait aussi une fonction deletion_condition_theorem pour le fun
 
 def deletionConditionTheorem(sigma,W):
+    """
+    Pour une liste de réflexions simples sigma représentant un mot sur S, retourne
+    un mot équivalent par l'application du théorème de condition de délétion (voir
+    théorème 2.7)
+
+    Fonctionne pour les groupes de Coxeter finis (le critère de longueur théoriquement 
+    vrai dans tous les groupes de Coxeter ne peut pas s'appliquer informatiquement 
+    dans les groupes infinis)
+
+    EXEMPLE ::
+    
+        sage: W = CoxeterGroup(['A',3])
+        sage: S = W.gens()
+        sage: w = [S[2],S[0],S[0],S[1],S[0],S[1],S[1],S[2],S[1],S[2]]
+        sage: deletionConditionTheorem(w,W)
+        [3, 2, 1, 2, 2, 3, 2, 3]
+    """
     w = W.one()
     for s in sigma :
         w = w * s
@@ -122,15 +192,11 @@ def appliquer_tresse(sigma,rel,i): #Pourrait servir pour tout type de relations
         res = sigma[:i] + rel[0] + sigma[i+len(rel[0]):] 
     return res
 
-"""if res[i:i+len(rel[0])] == rel[0]:
-        res[i:i+len(rel[0])] = rel[1]
-    else :
-        res[i:i+len(rel[1])] = rel[0]"""
-
 def Orbite_Tresse(sigma, W):
     """
-    Version efficace de la fonction qui calcule l'ensemble des mots réduits équivalents à sigma dans W (voir
-    graphe_mots_reduits pour des détails de fonctionnement
+    Version efficace de la fonction qui calcule l'ensemble des mots réduits
+    équivalents à sigma dans W (voir graphe_mots_reduits pour des détails
+    de fonctionnement)
     """
     w = gen_to_indices(reduction(sigma,W),W)
     Tmp = {tuple(w)}
