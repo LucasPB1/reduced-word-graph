@@ -194,9 +194,36 @@ def appliquer_tresse(sigma,rel,i): #Pourrait servir pour tout type de relations
 
 def Orbite_Tresse(sigma, W):
     """
-    Version efficace de la fonction qui calcule l'ensemble des mots réduits
-    équivalents à sigma dans W (voir graphe_mots_reduits pour des détails
-    de fonctionnement)
+    Pour une liste de réflexions simples sigma représentant un mot sur S, retourne
+    l'ensemble des mots réduits équivalent par l'application du théorème de condition
+    de délétion (voir théorème 2.7) puis de la propriété du mot (voir le théorème 3.10)
+
+    Fonctionne pour les groupes de Coxeter finis (le critère de longueur théoriquement 
+    vrai dans tous les groupes de Coxeter ne peut pas s'appliquer informatiquement 
+    dans les groupes infinis)
+
+    EXEMPLE ::
+    
+        sage: W = CoxeterGroup(['A',3])
+        sage: S = W.gens()
+        sage: w = [S[2],S[1],S[0],S[2],S[1],S[2]]
+        sage: Orbite_Tresse(w,W)
+        {(1, 2, 1, 3, 2, 1),
+         (1, 2, 3, 1, 2, 1),
+         (1, 2, 3, 2, 1, 2),
+         (1, 3, 2, 1, 3, 2),
+         (1, 3, 2, 3, 1, 2),
+         (2, 1, 2, 3, 2, 1),
+         (2, 1, 3, 2, 1, 3),
+         (2, 1, 3, 2, 3, 1),
+         (2, 3, 1, 2, 1, 3),
+         (2, 3, 1, 2, 3, 1),
+         (2, 3, 2, 1, 2, 3),
+         (3, 1, 2, 1, 3, 2),
+         (3, 1, 2, 3, 1, 2),
+         (3, 2, 1, 2, 3, 2),
+         (3, 2, 1, 3, 2, 3),
+         (3, 2, 3, 1, 2, 3)}
     """
     w = gen_to_indices(reduction(sigma,W),W)
     Tmp = {tuple(w)}
@@ -208,14 +235,11 @@ def Orbite_Tresse(sigma, W):
         rels[i][1] = tuple(rels[i][1])
     while len(Tmp) != 0 :
         w = Tmp.pop()
-        #print(w)
         count += 1
         print(count)
         for rel in rels :
-            #print(rel)
             i = indices_tresses(rel,w)
             for j in i :
-                #print(j)
                 l = appliquer_tresse(w,rel,j)
                 if not(l in Tmp) and not(l in Traité):
                         Tmp.add(l)
@@ -247,10 +271,51 @@ def Orbite_Tresse_l(sigma, W):
 
 def graphe_mots_reduits(sigma, W):
     """
-    Calcule le graphe des mots réduits équivalents au mot sigma (en considérant un mot comme une liste de
-    générateurs de W)
-    On utilise le type python set pour le stockage : ce sont des tables de hachage qui permettent d'effectuer de manière très
-    efficace l'ajout d'un élément et le test d'appartenance d'un élément à un ensemble, tant que l'on n'a pas besoin de l'ordre
+    Pour une liste de réflexions simples sigma représentant un mot sur S, retourne
+    l'ensemble des mots réduits équivalent par l'application du théorème de condition
+    de délétion (voir théorème 2.7) puis de la propriété du mot (voir le théorème 3.10)
+
+    Fonctionne pour les groupes de Coxeter finis (le critère de longueur théoriquement 
+    vrai dans tous les groupes de Coxeter ne peut pas s'appliquer informatiquement 
+    dans les groupes infinis)
+
+    EXEMPLE ::
+    
+        sage: W = CoxeterGroup(['A',3])
+        sage: S = W.gens()
+        sage: w = [S[2],S[1],S[0],S[2],S[1],S[2]]
+        sage: graphe_mots_reduits(w,W)
+        Pour une liste de réflexions simples sigma représentant un mot sur S, retourne
+    l'ensemble des mots réduits équivalent par l'application du théorème de condition
+    de délétion (voir théorème 2.7) puis de la propriété du mot (voir le théorème 3.10)
+
+    Fonctionne pour les groupes de Coxeter finis (le critère de longueur théoriquement 
+    vrai dans tous les groupes de Coxeter ne peut pas s'appliquer informatiquement 
+    dans les groupes infinis)
+
+    EXEMPLE ::
+    
+        sage: W = CoxeterGroup(['A',3])
+        sage: S = W.gens()
+        sage: w = [S[2],S[1],S[0],S[2],S[1],S[2]]
+        sage: G = graphe_mots_reduits(w,W)
+        sage: G.vertices()
+        [(3, 2, 1, 3, 2, 3),
+         (3, 2, 3, 1, 2, 3),
+         (3, 2, 1, 2, 3, 2),
+         (3, 1, 2, 1, 3, 2),
+         (2, 3, 2, 1, 2, 3),
+         (1, 3, 2, 1, 3, 2),
+         (3, 1, 2, 3, 1, 2),
+         (1, 3, 2, 3, 1, 2),
+         (1, 2, 3, 2, 1, 2),
+         (1, 2, 3, 1, 2, 1),
+         (2, 3, 1, 2, 1, 3),
+         (2, 1, 3, 2, 1, 3),
+         (2, 3, 1, 2, 3, 1),
+         (1, 2, 1, 3, 2, 1),
+         (2, 1, 3, 2, 3, 1),
+         (2, 1, 2, 3, 2, 1)]
     """
     w = gen_to_indices(reduction(sigma,W),W) # on cherche d'abord un mot réduit w équivalent à sigma
     G = graphs.EmptyGraph()
